@@ -1,1 +1,36 @@
+Create a new CT (LXC) in Proxmox using Ubuntu 18.04 or similar as the base, then start up your container.
 
+For example:
+Host: Ubuntu 18.04 Standard
+Hostname: PiHole1 (I include a number in case you want more than 1 PiHole)
+Disk Size: 8GB
+Memory: 2GB (for example)
+Network:  192.168.1.25/24
+
+---------------
+Within your LXC Console
+---------------
+You will probably need to update the container:
+# sudo apt update
+
+Install CA Certs:
+# sudo apt-get install ca-certificates wget -y
+
+Install PiHole:
+# wget -O basic-install.sh https://install.pi-hole.net
+# sudo bash basic-install.sh
+
+---------------
+Within your Proxmox Console
+---------------
+Modify your LXC conf for TUN:
+# nano /etc/pve/lxc/116.conf
+
+Add this to the bottom of the config file:
+# lxc.cgroup.devices.allow: c 10:200 rwm
+# lxc.mount.entry: /dev/net/tun dev/net/tun none bind,create=file
+
+---------------
+Follow the PiHole wizard!
+---------------
+Note: PiHole requires a fixed IP therefore make sure it makes the IP set when creating the LXC!
